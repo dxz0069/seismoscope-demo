@@ -32,6 +32,8 @@ def ping():
 
 @app.route("/book/<book_id>")
 def get_book(book_id):
-    from models import Book  # noqa: F401
-    book = Book.query.filter_by(book_title=str(book_id)).first()  # IDOR（无所有权谓词）
+    from auth import token_validator  # noqa: F401
+    token_validator(request.headers.get("Authorization"))  # 已认证接口
+    from models import Book
+    book = Book.query.filter_by(book_title=str(book_id)).first()  # IDOR（认证后无所有权谓词）
     return str(book)
